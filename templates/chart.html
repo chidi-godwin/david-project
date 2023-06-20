@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chart</title>
+    <style>
+      body {
+        background-image: url('https://img.freepik.com/free-vector/background-realistic-abstract-technology-particle_23-2148431735.jpg?w=996&t=st=1687206936~exp=1687207536~hmac=f0f0eae1fe4d3bbf0cc1e0a571f58cc12ae645652dff3f59a6884cd5c0f7fee2');
+        background-repeat: no-repeat;
+        background-size: cover;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+      
+      img {
+          max-width: 100%;
+          max-height: 100%;
+      }
+    </style>
+</head>
+<body>
+  <img src="{{ url_for('static', path='chart.png') }}" alt="Chart">
+</body>
+</html>

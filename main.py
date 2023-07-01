@@ -38,7 +38,7 @@ async def stats_params(request: Request):
     data = data[1:]
     data.reset_index(drop=True, inplace=True)
     table = data.to_html(index=False, classes='table table-dark table-striped')
-    return templates.TemplateResponse("stats_params.html", {"request": request, "table": table})
+    return templates.TemplateResponse("stats_params.html", {"request": request, "table": table, "title": "Statistical Parameters"})
 
 
 @app.post('/actual-data/')
@@ -60,7 +60,7 @@ async def actual_data(request: Request):
 
     table = data.to_html(index=False, classes='table table-dark table-striped')
 
-    return templates.TemplateResponse("stats_params.html", {"request": request, "table": table})
+    return templates.TemplateResponse("stats_params.html", {"request": request, "table": table, "title": "Actual Data"})
 
 @app.post('/display-chart')
 def display_chart(request: Request):

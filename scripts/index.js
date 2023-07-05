@@ -14,57 +14,42 @@ import {
 
 const example = document.getElementById("handsontable");
 const saveButton = document.getElementById("saveBtn")
-
-document.onload = function (){
-    Axios.get('http://127.0.0.1/get-csv-data').then(r => {
+console.log('this file is being run')
+Axios.get('http://127.0.0.1:8000/get-csv-data').then(r => {
         // the data gotten will update as so 
         //data == r.data
+       console.log(r.data)
        const hot = new Handsontable(example, {
-            data: r.data,
-            height: 450,
-            colWidths: [140, 126, 192, 100, 100, 90, 90, 110, 97],
+            data: r.data.data,
+            height: 1000,
+            colWidths: [140, 140, 140, 140, 140, 140, 140, 140, 140, 140, 140, 140],
             colHeaders: [
-              "Company nam",
-              "Country",
-              "Name",
-              "Sell date",
-              "Order ID",
-              "In stock",
-              "Qty",
-              "Progress",
-              "Rating"
-            ],
+              "Depth (ft)",
+              "Pressure(Psi)",
+              "Test flow rate(MCF/D)",
+              "Compressibility",
+              "Density of gas",
+              "Tubing ID(in)",
+              "Casing ID(in)",
+              "Tubing OD(in)",
+              "Flow Area",
+              "Density of Liquid",
+              "Temperature",
+              "Surface Tension",
+          ],
             columns: [
-              { data: 1, type: "text" },
-              { data: 2, type: "text" },
-              { data: 3, type: "text" },
-              {
-                data: 4,
-                type: "date",
-                allowInvalid: false
-              },
-              { data: 5, type: "text" },
-              {
-                data: 6,
-                type: "checkbox",
-                className: "htCenter"
-              },
-              {
-                data: 7,
-                type: "numeric"
-              },
-              {
-                data: 8,
-                renderer: progressBarRenderer,
-                readOnly: true,
-                className: "htMiddle"
-              },
-              {
-                data: 9,
-                renderer: starRenderer,
-                readOnly: true,
-                className: "star htCenter"
-              }
+              { data: 0, type: "numeric" },
+              { data: 1, type: "numeric" },
+              { data: 2, type: "numeric" },
+              { data: 3, type: "numeric" },
+              { data: 4, type: "numeric" },
+              { data: 5, type: "numeric" },
+              { data: 6, type: "numeric" },
+              { data: 7, type: "numeric" },
+              { data: 8, type: "numeric" },
+              { data: 9, type: "numeric" },
+              { data: 10, type: "numeric" },
+              { data: 11, type: "numeric" },
             ],
             dropdownMenu: true,
             hiddenColumns: {
@@ -83,11 +68,15 @@ document.onload = function (){
 
         saveButton.addEventListener('click', () => {
             // save all cell's data
-            Axios.post('http://127.0.0.1/update-csv',{ data: hot.getData() }).then(() => {
+            console.log(hot.getData())
+            Axios.post('http://127.0.0.1:8000/update-csv', { data: hot.getData() } ).then(() => {
                 console.log('The POST request is only used here for the demo purposes');
             });
         });
-    })
+    });
+  
+document.onload = function (){
+    console.log('this part of the code was executed')
   }
 
 

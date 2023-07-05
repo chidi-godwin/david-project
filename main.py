@@ -1,3 +1,4 @@
+# pylint: disable-all
 """Sever side entry point for the application."""
 import os
 
@@ -17,6 +18,7 @@ matplotlib.use("Agg")
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/scripts", StaticFiles(directory="dist"), name="scripts")
 
 # Define the directory for storing uploaded files
 UPLOADS_DIRECTORY = "uploads"
@@ -60,6 +62,7 @@ def read_csv(path):
 
 def process_csv(data: list[list[float]], columns):
     original_data = data
+
     def calculate_model_values(df, model_name):
         model_constant = {
             "turner": 1.92,
@@ -89,9 +92,9 @@ def process_csv(data: list[list[float]], columns):
                 "Gas flow rate(mcf/days)": critical_flow_rate,
             }
         )
-    
+
     df = pd.DataFrame(data, columns=INPUT_COLUMNS)
-    
+
     for column in df.columns:
         if df[column].dtype == "object":
             # Remove commas from string values and convert to float
@@ -149,6 +152,10 @@ def process_csv(data: list[list[float]], columns):
         os.path.join(UPLOADS_DIRECTORY, "stats.csv"), index=False, header=True, sep=","
     )
     
+    pd.DataFrame(original_data, columns=INPUT_COLUMNS).to_csv(
+        os.path.join(UPLOADS_DIRECTORY, "main.csv"), index=False, header=True, sep=","
+    )
+
     return original_data
 
 
@@ -168,23 +175,29 @@ async def submit_file(request: Request, file: UploadFile = File(...)):
 
     df = pd.read_csv(file.file)
     df.fillna(0, inplace=True)
+    df.to_csv(
+        os.path.join(UPLOADS_DIRECTORY, "main.csv"), index=False, header=True, sep=","
+    )
 
-    
+    return templates.TemplateResponse("analysis.html", {"request": request})
 
-    return {
-        "data": process_csv(df.values.tolist(), INPUT_COLUMNS),
-    }
+
+@app.get("/get-csv-data")
+async def get_csv_data():
+    df = pd.read_csv("./uploads/main.csv")
+    return {"data": df.values.tolist()}
 
 class Data(BaseModel):
     data: list[list[float]]
 
-@app.patch("/submit-file/")
-async def update_data(data: Data):
+@app.post("/update-csv/")
+async def update_data(request: Request):
     """
     endpoint to receive the file from the form.
     """
-    
-    processed_data = process_csv(data.data, INPUT_COLUMNS)
+    data = await request.json()
+
+    processed_data = process_csv(data['data'], INPUT_COLUMNS)
 
     return {
         "data": processed_data,

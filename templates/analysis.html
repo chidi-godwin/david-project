@@ -12,18 +12,22 @@
       }
       .form-parent{
         display: flex;
-        height: 100vh;
         justify-content: center;
         align-items: center;
-        flex-direction: column;
-        row-gap: 3em;
+        column-gap: 3em;
+        margin-top: 3em;
+      }
+      .save-table{
+        display: flex;
+        justify-content: center;
+        margin-top: 2em;
       }
     </style>
   </head>
   <body>
     <div id="handsontable"></div>
-    <div>
-      <button id="saveBtn" class="btn btn-outline-light" >Save</button>
+    <div class="save-table">
+      <button id="saveBtn" class="btn btn-primary" >Save</button>
     </div>
     <div class="form-parent">
         <form action="/stats-params" method="post">

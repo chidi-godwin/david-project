@@ -15,7 +15,7 @@ import {
 const example = document.getElementById("handsontable");
 const saveButton = document.getElementById("saveBtn")
 console.log('this file is being run')
-Axios.get('http://127.0.0.1:8000/get-csv-data').then(r => {
+Axios.get('https://david-project.onrender.com/get-csv-data').then(r => {
         // the data gotten will update as so 
         //data == r.data
        console.log(r.data)
@@ -69,7 +69,7 @@ Axios.get('http://127.0.0.1:8000/get-csv-data').then(r => {
         saveButton.addEventListener('click', () => {
             // save all cell's data
             console.log(hot.getData())
-            Axios.post('http://127.0.0.1:8000/update-csv', { data: hot.getData() } ).then(() => {
+            Axios.post('https://david-project.onrender.com/update-csv', { data: hot.getData() } ).then(() => {
                 console.log('The POST request is only used here for the demo purposes');
             });
         });

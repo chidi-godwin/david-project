@@ -3,6 +3,7 @@
 import os
 
 from fastapi import FastAPI, Request, UploadFile, File
+from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 import pandas as pd
@@ -10,7 +11,6 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 from pydantic import BaseModel
-import json
 
 matplotlib.use("Agg")
 
@@ -179,6 +179,10 @@ async def submit_file(request: Request, file: UploadFile = File(...)):
         os.path.join(UPLOADS_DIRECTORY, "main.csv"), index=False, header=True, sep=","
     )
 
+    return RedirectResponse(url="/analysis/")
+
+@app.get("/analysis/")
+async def analysis(request: Request):
     return templates.TemplateResponse("analysis.html", {"request": request})
 
 

@@ -149,7 +149,7 @@ def process_csv(data: list[list[float]], columns):
         os.path.join(UPLOADS_DIRECTORY, "data.csv"), index=False, header=True, sep=","
     )
     df.describe().to_csv(
-        os.path.join(UPLOADS_DIRECTORY, "stats.csv"), index=False, header=True, sep=","
+        os.path.join(UPLOADS_DIRECTORY, "stats.csv"), index=True, header=True, sep=","
     )
     
     pd.DataFrame(original_data, columns=INPUT_COLUMNS).to_csv(
@@ -219,10 +219,11 @@ async def stats_params(request: Request):
     endpoint to display stats params from sheet 1
     """
     df = read_csv("./uploads/data.csv")
-    original = pd.read_csv("./uploads/stats.csv")
+    original = pd.read_csv("./uploads/main.csv")
+    original_stats = original.describe()
     stats = df.describe()
-    table1 = original.to_html(index=False, classes="table table-dark table-striped")
-    table2 = stats.to_html(index=False, classes="table table-dark table-striped")
+    table1 = original_stats.to_html(index=True, classes="table table-dark table-striped")
+    table2 = stats.to_html(index=True, classes="table table-dark table-striped")
     return templates.TemplateResponse(
         "stats_params.html",
         {

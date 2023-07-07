@@ -323,8 +323,37 @@ def display_chart(request: Request):
 
     # save the plot
     plt.savefig("./static/crossplot.png")
+    
+    # Create an empty list to store the combined well status for each model
+    # Create an empty list to store the combined well status for each model
+    combined_well_status = []
 
-    # create the gridplot
+    # Loop through each model
+    for model in ["Turner's Model", "Coleman's Model", "Li's Model", "Nosseir's Model"]:
+        # Calculate well status for the current model
+        well_status = np.where(
+            result.loc[:, ("Actual Data", "Gas flow rate(mcf/days)")]
+            > result.loc[:, (model, "Gas flow rate(mcf/days)")],
+            "Liquid Unloading",
+            "Liquid Loading",
+        )
+        well_status = np.reshape(well_status, (-1, 1))  # Reshape to match the index shape
+
+        # Append the well status for the current model to the combined list
+        combined_well_status.append(well_status)
+
+    combined_well_status_2d = np.hstack(combined_well_status)
+
+    columns = pd.MultiIndex.from_tuples(
+        (model, "Well Status") for model in ["Turner's Model", "Coleman's Model", "Li's Model", "Nosseir's Model"]
+    )
+
+    combined_well_status_df = pd.DataFrame(
+        combined_well_status_2d,
+        columns=columns,
+        index=result.index,
+    )
+
     crossplot_data = result[
         [
             ("Actual Data", "Pressure(Psi)"),
@@ -342,15 +371,21 @@ def display_chart(request: Request):
     # Flatten the axes array to make it easier to iterate over
     axes = axes.flatten()
 
-    # Plot each model's gas flow rate against the pressure of the actual data, with different colors for 'Liquid Loading' and 'Liquid Unloading'
-    well_status_colors = {"Liquid Loading": "blue", "Liquid Unloading": "red"}
-    for i, model in enumerate(
-        ["Turner's Model", "Coleman's Model", "Li's Model", "Nosseir's Model"]
-    ):
+    # Define colors for well status values
+    well_status_colors = {
+        "Liquid Loading": "blue",
+        "Liquid Unloading": "red"
+    }
+
+    # Plot each model's gas flow rate against the pressure of the actual data, with different colors for well status
+    for i, model in enumerate(["Turner's Model", "Coleman's Model", "Li's Model", "Nosseir's Model"]):
         ax = axes[i]  # Get the current subplot
         model_gas_flow = result[(model, "Gas flow rate(mcf/days)")]
-        well_status = crossplot_data[("", "Well Status")]
+        well_status = combined_well_status_df[(model, "Well Status")]
+        
+        # Map well status values to colors
         color = [well_status_colors.get(status, "black") for status in well_status]
+        
         ax.scatter(
             crossplot_data[("Actual Data", "Pressure(Psi)")],
             model_gas_flow,
@@ -384,6 +419,7 @@ def display_chart(request: Request):
             title="Well Status",
             loc="upper right",
         )
+        ax.autoscale(enable=True, axis='y')  # Adjust y-axis limits dynamically
 
     # Remove any unused subplots
     if num_models < len(axes):
@@ -398,7 +434,6 @@ def display_chart(request: Request):
 
     # Close the figure to free up memory
     plt.close(fig)
-
     return templates.TemplateResponse("chart.html", {"request": request})
 
 

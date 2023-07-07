@@ -372,23 +372,5 @@ def display_chart(request: Request):
 
 
 if __name__ == "__main__":
-    # import uvicorn
-    # uvicorn.run(app, host="0.0.0.0", port=8000)
-    columns = pd.MultiIndex.from_tuples(
-        [
-            ("Turner's Model", "Critical Velocity(ft/s)"),
-            ("Turner's Model", "Gas flow rate(mcf/days)"),
-            ("Coleman's Model", "Critical Velocity(ft/s)"),
-            ("Coleman's Model", "Gas flow rate(mcf/days)"),
-            ("Li's Model", "Critical Velocity(ft/s)"),
-            ("Li's Model", "Gas flow rate(mcf/days)"),
-            ("Nosseir's Model", "Critical Velocity(ft/s)"),
-            ("Nosseir's Model", "Gas flow rate(mcf/days)"),
-            ("Actual Data", "Pressure(Psi)"),
-            ("Actual Data", "Gas flow rate(mcf/days)"),
-            ("", "Well Status"),
-        ]
-    )
-    df = pd.read_csv("./uploads/data.csv", header=[0, 1])
-    df.columns = columns
-    print(df)
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

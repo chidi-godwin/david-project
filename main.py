@@ -218,10 +218,41 @@ async def stats_params(request: Request):
     """
     endpoint to display stats params from sheet 1
     """
+    
+    def custom_describe(df):
+        # Filter out columns with complex numbers
+        numeric_columns = df.select_dtypes(include=np.number)
+        
+        # Compute statistics for numeric columns
+        count = numeric_columns.count()
+        mean = numeric_columns.mean()
+        median = numeric_columns.median()
+        mode = numeric_columns.mode().iloc[0]  # Mode can have multiple values, so we take the first one
+        std = numeric_columns.std()
+        var = numeric_columns.var()
+        minimum = numeric_columns.min()
+        maximum = numeric_columns.max()
+        data_range = maximum - minimum
+
+        # Create a new DataFrame with the modified statistics
+        describe_df = pd.DataFrame({
+            'Count': count,
+            'Mean': mean,
+            'Median': median,
+            'Mode': mode,
+            'Std': std,
+            'Var': var,
+            'Min': minimum,
+            'Max': maximum,
+            'Range': data_range
+        })
+
+        return describe_df.T
+
     df = read_csv("./uploads/data.csv")
     original = pd.read_csv("./uploads/main.csv")
-    original_stats = original.describe()
-    stats = df.describe()
+    original_stats = custom_describe(original)
+    stats = custom_describe(df)
     table1 = original_stats.to_html(index=True, classes="table table-dark table-striped")
     table2 = stats.to_html(index=True, classes="table table-dark table-striped")
     return templates.TemplateResponse(

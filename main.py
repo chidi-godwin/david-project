@@ -253,8 +253,8 @@ async def stats_params(request: Request):
     original = pd.read_csv("./uploads/main.csv")
     original_stats = custom_describe(original)
     stats = custom_describe(df)
-    table1 = original_stats.to_html(index=True, classes="table table-dark table-striped")
-    table2 = stats.to_html(index=True, classes="table table-dark table-striped")
+    table1 = original_stats.to_html(index=True, classes="table table-striped")
+    table2 = stats.to_html(index=True, classes="table table-striped")
     return templates.TemplateResponse(
         "stats_params.html",
         {
@@ -274,7 +274,7 @@ async def actual_data(request: Request):
 
     df = read_csv("./uploads/data.csv")
 
-    table = df.to_html(index=False, classes="table table-dark table-striped")
+    table = df.to_html(index=False, classes="table table-striped")
 
     return templates.TemplateResponse(
         "results.html", {"request": request, "table": table, "title": "Results"}
